@@ -1,0 +1,57 @@
+---
+title: "*Tidy Finance with R* 学习记录"
+author: "shitao"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+    default_style: "light"
+    downcute_theme: "default"
+    number_sections: true
+    code_folding: "show"
+    includes:
+      before_body: header.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.align = "center",
+                      cache = TRUE)
+```
+
+# Introduction {.unnumbered}
+
+这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，便于日后复盘与分享，以该形式记录。
+
+用到的包如下：
+
+```{r library, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(tidyquant)
+```
+
+# Introduction to Tidy Finance
+
+## 股票数据
+
+读取苹果公司股票价格数据，`tq_get()`函数默认使用雅虎数据库，因此在国内需要连接外网后使用。
+
+```{r}
+price <- tq_get("AAPL", # Apple Stock
+                get = "stock.price",
+                from = "2000-01-01",
+                to = "2022-06-30")
+price
+```
+
+简单的可视化，呈现价格走势：
+
+```{r}
+price %>% 
+  ggplot(aes(date, adjusted)) +
+  geom_line() +
+  labs(x = NULL, y = NULL,
+       title = "AAPL stock prices",
+       subtitle = "Prices in USD, adjusted for dividend payments and stock splits")
+```
+
