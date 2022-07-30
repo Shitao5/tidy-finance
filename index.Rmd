@@ -27,18 +27,18 @@ knitr::opts_chunk$set(echo = TRUE,
 
 # Introduction {.unnumbered}
 
-这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，便于日后复盘与分享，以该形式记录。
+这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，使用的R软件版本为`r paste0(version$major, ".", version$minor)`（`r paste(version$year, version$month, version$day, sep = "-")`），下载源码可点击页面最顶端标题右侧“Code > Download Rmd”。
 
 对内容有疑问或建议的小伙伴，欢迎在[这里](https://github.com/Shitao5/tidy-finance)提交Issues或者Pull requests，在下先行谢过了。🤝🤝
 
-所需用到的包如下：
+# Introduction to Tidy Finance
 
-```{r library, warning=FALSE, message=FALSE}
+说到Tidy（整洁），首先加载两个tidy开头的包，而后开始我们的工作。
+
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(tidyquant)
 ```
-
-# Introduction to Tidy Finance
 
 ## 股票数据
 

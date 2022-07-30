@@ -7,7 +7,7 @@
 
         <meta name="author" content="Shitao" />
     
-        <meta name="date" content="2022-07-30" />
+        <meta name="date" content="2022-07-31" />
     
     <title>Study Tidy Finance with R</title>
 
@@ -1629,7 +1629,7 @@ Prism.languages.r={comment:/#.*/,string:{pattern:/(['"])(?:\\.|(?!\1)[^\\\r\n])*
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Shitao
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-07-30</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-07-31</p>
            
 
    
@@ -1640,16 +1640,17 @@ Prism.languages.r={comment:/#.*/,string:{pattern:/(['"])(?:\\.|(?!\1)[^\\\r\n])*
 <div id="introduction" class="section level1 unnumbered">
 <h1 class="unnumbered">Introduction</h1>
 <p>这是<a href="https://www.tidy-finance.org">Tidy Finance with
-R</a>的学习记录，便于日后复盘与分享，以该形式记录。</p>
+R</a>的学习记录，使用的R软件版本为4.2.1（2022-06-23），下载源码可点击页面最顶端标题右侧“Code
+&gt; Download Rmd”。</p>
 <p>对内容有疑问或建议的小伙伴，欢迎在<a href="https://github.com/Shitao5/tidy-finance">这里</a>提交Issues或者Pull
 requests，在下先行谢过了。🤝🤝</p>
-<p>所需用到的包如下：</p>
-<pre class="r"><code>library(tidyverse)
-library(tidyquant)</code></pre>
 </div>
 <div id="introduction-to-tidy-finance" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Introduction to Tidy
 Finance</h1>
+<p>说到Tidy（整洁），首先加载两个tidy开头的包，而后开始我们的工作。</p>
+<pre class="r"><code>library(tidyverse)
+library(tidyquant)</code></pre>
 <div id="股票数据" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> 股票数据</h2>
 <p>读取苹果公司股票价格数据，<code>tq_get()</code>函数默认使用雅虎数据库，因此在国内需要连接外网后使用。</p>
@@ -1718,7 +1719,7 @@ returns
 </div>
 
    
-      <div id="rmd-source-code">LS0tDQp0aXRsZTogIlN0dWR5ICpUaWR5IEZpbmFuY2Ugd2l0aCBSKiINCmF1dGhvcjogIlNoaXRhbyINCmRhdGU6ICJgciBTeXMuRGF0ZSgpYCINCm91dHB1dDoNCiAgcm1kZm9ybWF0czo6ZG93bmN1dGU6DQogICAgc2VsZl9jb250YWluZWQ6IHRydWUNCiAgICBkZWZhdWx0X3N0eWxlOiAibGlnaHQiDQogICAgZG93bmN1dGVfdGhlbWU6ICJkZWZhdWx0Ig0KICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogInNob3ciDQogICAgY3NzOiAic3R5bGUuY3NzIg0KICAgIGNvZGVfZG93bmxvYWQ6IHRydWUNCiAgICBpbmNsdWRlczoNCiAgICAgIGJlZm9yZV9ib2R5OiBoZWFkZXIuaHRtbA0KICAgICAgYWZ0ZXJfYm9keTogZm9vdGVyLmh0bWwNCi0tLQ0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSwNCiAgICAgICAgICAgICAgICAgICAgICBmaWcuYWxpZ24gPSAiY2VudGVyIiwNCiAgICAgICAgICAgICAgICAgICAgICBmaWcuYXNwID0gMC42MTgsDQogICAgICAgICAgICAgICAgICAgICAgY29tbWVudCA9ICIjPiIsDQogICAgICAgICAgICAgICAgICAgICAgY29sbGFwc2UgPSBUUlVFLA0KICAgICAgICAgICAgICAgICAgICAgIGNhY2hlID0gVFJVRSkNCmBgYA0KDQojIEludHJvZHVjdGlvbiB7LnVubnVtYmVyZWR9DQoNCui/meaYr1tUaWR5IEZpbmFuY2Ugd2l0aCBSXShodHRwczovL3d3dy50aWR5LWZpbmFuY2Uub3JnKeeahOWtpuS5oOiusOW9le+8jOS+v+S6juaXpeWQjuWkjeebmOS4juWIhuS6q++8jOS7peivpeW9ouW8j+iusOW9leOAgg0KDQrlr7nlhoXlrrnmnInnlpHpl67miJblu7rorq7nmoTlsI/kvJnkvLTvvIzmrKLov47lnKhb6L+Z6YeMXShodHRwczovL2dpdGh1Yi5jb20vU2hpdGFvNS90aWR5LWZpbmFuY2Up5o+Q5LqkSXNzdWVz5oiW6ICFUHVsbCByZXF1ZXN0c++8jOWcqOS4i+WFiOihjOiwoui/h+S6huOAgvCfpJ3wn6SdDQoNCuaJgOmcgOeUqOWIsOeahOWMheWmguS4i++8mg0KDQpgYGB7ciBsaWJyYXJ5LCB3YXJuaW5nPUZBTFNFLCBtZXNzYWdlPUZBTFNFfQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KHRpZHlxdWFudCkNCmBgYA0KDQojIEludHJvZHVjdGlvbiB0byBUaWR5IEZpbmFuY2UNCg0KIyMg6IKh56Wo5pWw5o2uDQoNCuivu+WPluiLueaenOWFrOWPuOiCoeelqOS7t+agvOaVsOaNru+8jGB0cV9nZXQoKWDlh73mlbDpu5jorqTkvb/nlKjpm4XomY7mlbDmja7lupPvvIzlm6DmraTlnKjlm73lhoXpnIDopoHov57mjqXlpJbnvZHlkI7kvb/nlKjjgIINCg0KYGBge3J9DQpwcmljZSA8LSB0cV9nZXQoIkFBUEwiLCAjIEFwcGxlIFN0b2NrDQogICAgICAgICAgICAgICAgZ2V0ID0gInN0b2NrLnByaWNlIiwNCiAgICAgICAgICAgICAgICBmcm9tID0gIjIwMDAtMDEtMDEiLA0KICAgICAgICAgICAgICAgIHRvID0gIjIwMjItMDYtMzAiKQ0KcHJpY2UNCmBgYA0KDQrnroDljZXnmoTlj6/op4bljJbvvIzlkYjnjrDku7fmoLzotbDlir/vvJoNCg0KYGBge3J9DQpwcmljZSAlPiUgDQogIGdncGxvdChhZXMoZGF0ZSwgYWRqdXN0ZWQpKSArDQogIGdlb21fbGluZSgpICsNCiAgbGFicyh4ID0gTlVMTCwgeSA9IE5VTEwsDQogICAgICAgdGl0bGUgPSAiQUFQTCBzdG9jayBwcmljZXMiLA0KICAgICAgIHN1YnRpdGxlID0gIlByaWNlcyBpbiBVU0QsIGFkanVzdGVkIGZvciBkaXZpZGVuZCBwYXltZW50cyBhbmQgc3RvY2sgc3BsaXRzIikNCmBgYA0KDQojIyBEYWlseSBSZXR1cm4g77yI5pel5pS255uK546H77yJDQoNClxiZWdpbntlcXVhdGlvbn0NClx0ZXh0e2RhaWx5IHJldHVybn0gPSBcZnJhY3twX3QgLSBwX3t0LTF9fXtwX3t0LTF9fSA9IFxmcmFje3BfdH17cF97dC0xfX0gLSAxDQpcZW5ke2VxdWF0aW9ufQ0KDQrmoLnmja7ku6XkuIrlhazlvI/vvIznlKjosIPmlbTlkI7ku7fmoLzorqHnrpfml6XmlLbnm4rnjofvvJoNCg0KYGBge3J9DQpyZXR1cm5zIDwtIHByaWNlICU+JSANCiAgYXJyYW5nZShkYXRlKSAlPiUgDQogIG11dGF0ZShyZXQgPSBhZGp1c3RlZCAvIGxhZyhhZGp1c3RlZCkgLSAxKSAlPiUgDQogIHNlbGVjdChzeW1ib2wsIGRhdGUsIHJldCkNCnJldHVybnMNCmBgYA0KDQrorqHnrpfliY3pnIDlhYjlsIbmlbDmja7moLnmja7ml6XmnJ/mjpLluo/vvIznlLHkuo5gciBkcGx5cjo6YXJyYW5nZShwcmljZSwgZGF0ZSkkZGF0ZVsxXWDkuLrnrKzkuIDlpKnvvIzlm6DmraTorqHnrpfmlLbnm4rnjofml7bkuqfnlJ/nvLrlpLHlgLwoTkEp77yM5Zyo6L+Z6YeM5Y+v5Lul55u05o6l5YmU6Zmk77yaDQoNCmBgYHtyfQ0KcmV0dXJucyA8LSByZXR1cm5zICU+JSANCiAgZHJvcF9uYShyZXQpDQpgYGANCg0KDQoNCg0KDQoNCg0KDQo=</div>
+      <div id="rmd-source-code">LS0tDQp0aXRsZTogIlN0dWR5ICpUaWR5IEZpbmFuY2Ugd2l0aCBSKiINCmF1dGhvcjogIlNoaXRhbyINCmRhdGU6ICJgciBTeXMuRGF0ZSgpYCINCm91dHB1dDoNCiAgcm1kZm9ybWF0czo6ZG93bmN1dGU6DQogICAgc2VsZl9jb250YWluZWQ6IHRydWUNCiAgICBkZWZhdWx0X3N0eWxlOiAibGlnaHQiDQogICAgZG93bmN1dGVfdGhlbWU6ICJkZWZhdWx0Ig0KICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQ0KICAgIGNvZGVfZm9sZGluZzogInNob3ciDQogICAgY3NzOiAic3R5bGUuY3NzIg0KICAgIGNvZGVfZG93bmxvYWQ6IHRydWUNCiAgICBpbmNsdWRlczoNCiAgICAgIGJlZm9yZV9ib2R5OiBoZWFkZXIuaHRtbA0KICAgICAgYWZ0ZXJfYm9keTogZm9vdGVyLmh0bWwNCi0tLQ0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSwNCiAgICAgICAgICAgICAgICAgICAgICBmaWcuYWxpZ24gPSAiY2VudGVyIiwNCiAgICAgICAgICAgICAgICAgICAgICBmaWcuYXNwID0gMC42MTgsDQogICAgICAgICAgICAgICAgICAgICAgY29tbWVudCA9ICIjPiIsDQogICAgICAgICAgICAgICAgICAgICAgY29sbGFwc2UgPSBUUlVFLA0KICAgICAgICAgICAgICAgICAgICAgIGNhY2hlID0gVFJVRSkNCmBgYA0KDQojIEludHJvZHVjdGlvbiB7LnVubnVtYmVyZWR9DQoNCui/meaYr1tUaWR5IEZpbmFuY2Ugd2l0aCBSXShodHRwczovL3d3dy50aWR5LWZpbmFuY2Uub3JnKeeahOWtpuS5oOiusOW9le+8jOS9v+eUqOeahFLova/ku7bniYjmnKzkuLpgciBwYXN0ZTAodmVyc2lvbiRtYWpvciwgIi4iLCB2ZXJzaW9uJG1pbm9yKWDvvIhgciBwYXN0ZSh2ZXJzaW9uJHllYXIsIHZlcnNpb24kbW9udGgsIHZlcnNpb24kZGF5LCBzZXAgPSAiLSIpYO+8ie+8jOS4i+i9vea6kOeggeWPr+eCueWHu+mhtemdouacgOmhtuerr+agh+mimOWPs+S+p+KAnENvZGUgPiBEb3dubG9hZCBSbWTigJ3jgIINCg0K5a+55YaF5a655pyJ55aR6Zeu5oiW5bu66K6u55qE5bCP5LyZ5Ly077yM5qyi6L+O5ZyoW+i/memHjF0oaHR0cHM6Ly9naXRodWIuY29tL1NoaXRhbzUvdGlkeS1maW5hbmNlKeaPkOS6pElzc3Vlc+aIluiAhVB1bGwgcmVxdWVzdHPvvIzlnKjkuIvlhYjooYzosKLov4fkuobjgILwn6Sd8J+knQ0KDQojIEludHJvZHVjdGlvbiB0byBUaWR5IEZpbmFuY2UNCg0K6K+05YiwVGlkee+8iOaVtOa0ge+8ie+8jOmmluWFiOWKoOi9veS4pOS4qnRpZHnlvIDlpLTnmoTljIXvvIzogIzlkI7lvIDlp4vmiJHku6znmoTlt6XkvZzjgIINCg0KYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0NCmxpYnJhcnkodGlkeXZlcnNlKQ0KbGlicmFyeSh0aWR5cXVhbnQpDQpgYGANCg0KIyMg6IKh56Wo5pWw5o2uDQoNCuivu+WPluiLueaenOWFrOWPuOiCoeelqOS7t+agvOaVsOaNru+8jGB0cV9nZXQoKWDlh73mlbDpu5jorqTkvb/nlKjpm4XomY7mlbDmja7lupPvvIzlm6DmraTlnKjlm73lhoXpnIDopoHov57mjqXlpJbnvZHlkI7kvb/nlKjjgIINCg0KYGBge3J9DQpwcmljZSA8LSB0cV9nZXQoIkFBUEwiLCAjIEFwcGxlIFN0b2NrDQogICAgICAgICAgICAgICAgZ2V0ID0gInN0b2NrLnByaWNlIiwNCiAgICAgICAgICAgICAgICBmcm9tID0gIjIwMDAtMDEtMDEiLA0KICAgICAgICAgICAgICAgIHRvID0gIjIwMjItMDYtMzAiKQ0KcHJpY2UNCmBgYA0KDQrnroDljZXnmoTlj6/op4bljJbvvIzlkYjnjrDku7fmoLzotbDlir/vvJoNCg0KYGBge3J9DQpwcmljZSAlPiUgDQogIGdncGxvdChhZXMoZGF0ZSwgYWRqdXN0ZWQpKSArDQogIGdlb21fbGluZSgpICsNCiAgbGFicyh4ID0gTlVMTCwgeSA9IE5VTEwsDQogICAgICAgdGl0bGUgPSAiQUFQTCBzdG9jayBwcmljZXMiLA0KICAgICAgIHN1YnRpdGxlID0gIlByaWNlcyBpbiBVU0QsIGFkanVzdGVkIGZvciBkaXZpZGVuZCBwYXltZW50cyBhbmQgc3RvY2sgc3BsaXRzIikNCmBgYA0KDQojIyBEYWlseSBSZXR1cm4g77yI5pel5pS255uK546H77yJDQoNClxiZWdpbntlcXVhdGlvbn0NClx0ZXh0e2RhaWx5IHJldHVybn0gPSBcZnJhY3twX3QgLSBwX3t0LTF9fXtwX3t0LTF9fSA9IFxmcmFje3BfdH17cF97dC0xfX0gLSAxDQpcZW5ke2VxdWF0aW9ufQ0KDQrmoLnmja7ku6XkuIrlhazlvI/vvIznlKjosIPmlbTlkI7ku7fmoLzorqHnrpfml6XmlLbnm4rnjofvvJoNCg0KYGBge3J9DQpyZXR1cm5zIDwtIHByaWNlICU+JSANCiAgYXJyYW5nZShkYXRlKSAlPiUgDQogIG11dGF0ZShyZXQgPSBhZGp1c3RlZCAvIGxhZyhhZGp1c3RlZCkgLSAxKSAlPiUgDQogIHNlbGVjdChzeW1ib2wsIGRhdGUsIHJldCkNCnJldHVybnMNCmBgYA0KDQrorqHnrpfliY3pnIDlhYjlsIbmlbDmja7moLnmja7ml6XmnJ/mjpLluo/vvIznlLHkuo5gciBkcGx5cjo6YXJyYW5nZShwcmljZSwgZGF0ZSkkZGF0ZVsxXWDkuLrnrKzkuIDlpKnvvIzlm6DmraTorqHnrpfmlLbnm4rnjofml7bkuqfnlJ/nvLrlpLHlgLwoTkEp77yM5Zyo6L+Z6YeM5Y+v5Lul55u05o6l5YmU6Zmk77yaDQoNCmBgYHtyfQ0KcmV0dXJucyA8LSByZXR1cm5zICU+JSANCiAgZHJvcF9uYShyZXQpDQpgYGANCg0KDQoNCg0KDQoNCg0KDQo=</div>
       <style>
       /**
        * Demo Styles
