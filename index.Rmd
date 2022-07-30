@@ -1,6 +1,6 @@
 ---
-title: "*Tidy Finance with R* 学习记录"
-author: "shitao"
+title: "Study *Tidy Finance with R*"
+author: "Shitao"
 date: "`r Sys.Date()`"
 output:
   rmdformats::downcute:
