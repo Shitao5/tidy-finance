@@ -9,13 +9,19 @@ output:
     downcute_theme: "default"
     number_sections: true
     code_folding: "show"
+    css: "style.css"
+    code_download: true
     includes:
       before_body: header.html
+      after_body: footer.html
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       fig.align = "center",
+                      fig.asp = 0.618,
+                      comment = "#>",
+                      collapse = TRUE,
                       cache = TRUE)
 ```
 
@@ -23,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE,
 
 这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，便于日后复盘与分享，以该形式记录。
 
-对于笔记内容有所疑问或者建议的，欢迎小伙伴在[这里](https://github.com/Shitao5/tidy-finance)提交Issues或者Pull requests，在下先行谢过了。🤝🤝
+对内容有疑问或建议的小伙伴，欢迎在[这里](https://github.com/Shitao5/tidy-finance)提交Issues或者Pull requests，在下先行谢过了。🤝🤝
 
 所需用到的包如下：
 
@@ -56,4 +62,34 @@ price %>%
        title = "AAPL stock prices",
        subtitle = "Prices in USD, adjusted for dividend payments and stock splits")
 ```
+
+## Daily Return （日收益率）
+
+\begin{equation}
+\text{daily return} = \frac{p_t - p_{t-1}}{p_{t-1}} = \frac{p_t}{p_{t-1}} - 1
+\end{equation}
+
+根据以上公式，用调整后价格计算日收益率：
+
+```{r}
+returns <- price %>% 
+  arrange(date) %>% 
+  mutate(ret = adjusted / lag(adjusted) - 1) %>% 
+  select(symbol, date, ret)
+returns
+```
+
+计算前需先将数据根据日期排序，由于`r dplyr::arrange(price, date)$date[1]`为第一天，因此计算收益率时产生缺失值(NA)，在这里可以直接剔除：
+
+```{r}
+returns <- returns %>% 
+  drop_na(ret)
+```
+
+
+
+
+
+
+
 
