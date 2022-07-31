@@ -23,26 +23,58 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment = "#>",
                       collapse = TRUE,
                       cache = TRUE)
+options(digits = 3)
 ```
 
 # Introduction {.unnumbered}
 
-这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，使用的R软件版本为`r paste0(version$major, ".", version$minor)`（`r paste(version$year, version$month, version$day, sep = "-")`），下载源码可点击页面最顶端标题右侧“Code > Download Rmd”。
+这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，使用的R软件版本为`r paste0(version$major, ".", version$minor)`（`r paste(version$year, version$month, version$day, sep = "-")`），下载源码[^code]可点击页面最顶端标题右侧“Code > Download Rmd”。
 
-对内容有疑问或建议的小伙伴，欢迎在[这里](https://github.com/Shitao5/tidy-finance)提交Issues或者Pull requests，在下先行谢过了。🤝🤝
+[^code]: 在安装后所需的包后，运行源码可生成该文件的文本内容。由于配置了css等样式文件，如果需要完全重现该文件，请在[Github](https://github.com/Shitao5/tidy-finance)下载该仓库后进行Knit。
+
+对内容有疑问或建议的小伙伴，欢迎在[这里](https://github.com/Shitao5/tidy-finance)提交Issues或者Pull requests，帮助完善，在下先行谢过了。🤝🤝
 
 # Introduction to Tidy Finance
 
-说到Tidy（整洁），首先加载两个tidy开头的包，而后开始我们的工作。
+说到Tidy（整洁），首先加载两个tidy开头的包：
 
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(tidyquant)
 ```
 
+```{r include=FALSE}
+# ggplot2 global theme
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+
+这里补充一下管道操作符`%>%`的知识，其作用是将前一步生成的结果作为下一步函数的第一个参数[^pipe]：
+
+[^pipe]: 也可以不是第一个，这里先按下不表。
+<!-- 💥记得到需要的时候需要表的哈！💥 -->
+
+- `x %>% f()`等同于`f(x)`
+- `x %>% f(y)`等同于`f(x, y)`
+- `x %>% f() %>% g()`等同于`g(f(x))`
+- `f(x) %>% g(y) %>% t(z)`等同于`t(g(f(x), y), z)`
+
+是不是有点像“然后”的意思？它可以让写代码、读代码都安装从上到下、从左到右的顺序一步一步地进行，且不会生成很多的中间变量，大部分时候可以从数据到结果“一管到底”，大大增加数据分析的流畅性。快捷键为`Ctrl + Shift + M`。
+
+揣着这个效率神器，我们出发！🚀
+
 ## 股票数据
 
-读取苹果公司股票价格数据，`tq_get()`函数默认使用雅虎数据库，因此在国内需要连接外网后使用。
+读取苹果公司股票价格数据，`tq_get()`函数默认使用雅虎数据库，因此在国内需要连接外网后使用[^rstudio-cloud]。
+
+[^rstudio-cloud]: 也可以使用[RStudio Cloud](https://rstudio.cloud)运行代码。
+
+```{r data-price, eval=FALSE, include=FALSE}
+# 如不能连接外网，请运行这个代码块。
+# save(price, file = "data/price.rda")
+load("data/price.rda")
+```
+
 
 ```{r}
 price <- tq_get("AAPL", # Apple Stock
@@ -54,7 +86,7 @@ price
 
 简单的可视化，呈现价格走势：
 
-```{r}
+```{r fig_AAPL}
 price %>% 
   ggplot(aes(date, adjusted)) +
   geom_line() +
@@ -63,7 +95,7 @@ price %>%
        subtitle = "Prices in USD, adjusted for dividend payments and stock splits")
 ```
 
-## Daily Return （日收益率）
+## 日收益率（Daily Return）
 
 \begin{equation}
 \text{daily return} = \frac{p_t - p_{t-1}}{p_{t-1}} = \frac{p_t}{p_{t-1}} - 1
@@ -86,7 +118,49 @@ returns <- returns %>%
   drop_na(ret)
 ```
 
+对日收益率进行汇总统计：
 
+```{r}
+summary(returns$ret)
+```
+
+可以看到最高日收益率为`r max(returns$ret) * 100`%，最低日收益达到`r min(returns$ret) * 100`%~~（股民落泪）~~，而平均日收益率为`r mean(returns$ret) * 100`%，略高于0%。
+
+绘制日收益率柱状图，更直观地展示数据。图中的红色竖线代表日收益率的5%分位数（`r quantile(returns$ret, .05)`）[^risk]。
+
+[^risk]: 5%分位数与风险价值密切相关，也是监管机构通常监控的风险评估。
+
+```{r fig_ret}
+quantile_05 <- quantile(returns$ret, .05)
+
+returns %>% 
+  ggplot(aes(ret)) +
+  geom_histogram(bins = 100) +
+  geom_vline(aes(xintercept = quantile_05),
+             color = "red", linetype = "dashed") +
+  scale_x_continuous(labels = scales::percent) +
+  labs(x = NULL, y = NULL,
+       title = "Distribution of daily AAPL return",
+       subtitle = "The dotted vertical line indicates the historical 5% quantile")
+```
+
+按年分组后，对日收益率进行分组统计：
+
+```{r paged.print=TRUE}
+returns %>%
+  mutate(ret = ret * 100) %>%
+  group_by(year = year(date)) %>%
+  summarise(across(ret,
+    list(
+      daily_mean = mean,
+      daily_sd = sd,
+      daily_min = min,
+      daily_max = max
+    ),
+    .names = "{.fn}"
+  )) %>% 
+  print(n = Inf)
+```
 
 
 
