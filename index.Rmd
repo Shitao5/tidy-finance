@@ -4,6 +4,7 @@ author: "Shitao"
 date: "`r Sys.Date()`"
 output:
   rmdformats::downcute:
+    use_bookdown: true
     self_contained: true
     default_style: "light"
     downcute_theme: "default"
@@ -14,6 +15,7 @@ output:
     includes:
       before_body: header.html
       after_body: footer.html
+bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -23,14 +25,28 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment = "#>",
                       collapse = TRUE,
                       cache = TRUE)
+
 options(digits = 3)
+
+rmdformats::downcute(
+  use_bookdown = TRUE
+)
+
+# ggplot2 global theme
+library(ggplot2)
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+```{r data-load, eval=FALSE, include=FALSE}
+# 如不能连接外网，请运行这个代码块。
+load("datas.rds")
 ```
 
 # Introduction {.unnumbered}
 
-这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，使用的R软件版本为`r paste0(version$major, ".", version$minor)`（`r paste(version$year, version$month, version$day, sep = "-")`），下载源码[^code]可点击页面最顶端标题右侧“Code > Download Rmd”。
+这是[Tidy Finance with R](https://www.tidy-finance.org)的学习记录，使用的R软件版本为`r paste0(version$major, ".", version$minor)`（`r paste(version$year, version$month, version$day, sep = "-")`），下载源码[^1]可点击页面最顶端标题右侧"Code \> Download Rmd"。
 
-[^code]: 在安装后所需的包后，运行源码可生成该文件的文本内容。由于配置了css等样式文件，如果需要完全重现该文件，请在[Github](https://github.com/Shitao5/tidy-finance)下载该仓库后进行Knit。
+[^1]: 在安装后所需的包后，运行源码可生成该文件的文本内容。由于配置了css等样式文件，如果需要完全重现该文件，请在[Github](https://github.com/Shitao5/tidy-finance)下载该仓库后进行Knit。
 
 对内容有疑问或建议的小伙伴，欢迎在[这里](https://github.com/Shitao5/tidy-finance)提交Issues或者Pull requests，帮助完善，在下先行谢过了。🤝🤝
 
@@ -43,38 +59,30 @@ library(tidyverse)
 library(tidyquant)
 ```
 
-```{r include=FALSE}
-# ggplot2 global theme
-theme_set(theme_bw() + theme(legend.position = "bottom"))
-```
+这里补充一下管道操作符`%>%`的知识，其作用是将前一步生成的结果作为下一步函数的第一个参数[^2]：
 
+[^2]: 也可以不是第一个，这里先按下不表。 <!-- 💥记得到需要的时候表的哈！💥 -->
 
-这里补充一下管道操作符`%>%`的知识，其作用是将前一步生成的结果作为下一步函数的第一个参数[^pipe]：
+-   `x %>% f()`等同于`f(x)`
+-   `x %>% f(y)`等同于`f(x, y)`
+-   `x %>% f() %>% g()`等同于`g(f(x))`
+-   `f(x) %>% g(y) %>% t(z)`等同于`t(g(f(x), y), z)`
 
-[^pipe]: 也可以不是第一个，这里先按下不表。
-<!-- 💥记得到需要的时候需要表的哈！💥 -->
-
-- `x %>% f()`等同于`f(x)`
-- `x %>% f(y)`等同于`f(x, y)`
-- `x %>% f() %>% g()`等同于`g(f(x))`
-- `f(x) %>% g(y) %>% t(z)`等同于`t(g(f(x), y), z)`
-
-是不是有点像“然后”的意思？它可以让写代码、读代码都安装从上到下、从左到右的顺序一步一步地进行，且不会生成很多的中间变量，大部分时候可以从数据到结果“一管到底”，大大增加数据分析的流畅性。快捷键为`Ctrl + Shift + M`。
+是不是有点像"然后"的意思？它可以让写代码、读代码都安装从上到下、从左到右的顺序一步一步地进行，且不会生成很多的中间变量，大部分时候可以从数据到结果"一管到底"，大大增加数据分析的流畅性。快捷键为`Ctrl + Shift + M`。
 
 揣着这个效率神器，我们出发！🚀
 
-## 股票数据
+## 单个股票分析
 
-读取苹果公司股票价格数据，`tq_get()`函数默认使用雅虎数据库，因此在国内需要连接外网后使用[^rstudio-cloud]。
+读取苹果公司股票价格数据，`tq_get()`函数默认使用雅虎数据库，因此在国内需要连接外网后使用[^3]。
 
-[^rstudio-cloud]: 也可以使用[RStudio Cloud](https://rstudio.cloud)运行代码。
+[^3]: 或者使用[RStudio Cloud](https://rstudio.cloud)运行代码。
 
 ```{r data-price, eval=FALSE, include=FALSE}
 # 如不能连接外网，请运行这个代码块。
 # save(price, file = "data/price.rda")
 load("data/price.rda")
 ```
-
 
 ```{r}
 price <- tq_get("AAPL", # Apple Stock
@@ -95,27 +103,22 @@ price %>%
        subtitle = "Prices in USD, adjusted for dividend payments and stock splits")
 ```
 
-## 日收益率（Daily Return）
+根据以下公式，用调整后价格计算日收益率（Daily Return）。
 
+```{=tex}
 \begin{equation}
 \text{daily return} = \frac{p_t - p_{t-1}}{p_{t-1}} = \frac{p_t}{p_{t-1}} - 1
 \end{equation}
-
-根据以上公式，用调整后价格计算日收益率：
+```
+计算前需先将数据根据日期排序，由于`r dplyr::arrange(price, date)$date[1]`为第一天，因此计算收益率时产生缺失值(NA)，可以直接剔除。
 
 ```{r}
 returns <- price %>% 
   arrange(date) %>% 
   mutate(ret = adjusted / lag(adjusted) - 1) %>% 
-  select(symbol, date, ret)
-returns
-```
-
-计算前需先将数据根据日期排序，由于`r dplyr::arrange(price, date)$date[1]`为第一天，因此计算收益率时产生缺失值(NA)，在这里可以直接剔除：
-
-```{r}
-returns <- returns %>% 
+  select(symbol, date, ret) %>% 
   drop_na(ret)
+returns
 ```
 
 对日收益率进行汇总统计：
@@ -124,11 +127,11 @@ returns <- returns %>%
 summary(returns$ret)
 ```
 
-可以看到最高日收益率为`r max(returns$ret) * 100`%，最低日收益达到`r min(returns$ret) * 100`%~~（股民落泪）~~，而平均日收益率为`r mean(returns$ret) * 100`%，略高于0%。
+可以看到最高日收益率为`r max(returns$ret) * 100`%，最低日收益达到`r min(returns$ret) * 100`%，而平均日收益率为`r mean(returns$ret) * 100`%，略高于0%。
 
-绘制日收益率柱状图，更直观地展示数据。图中的红色竖线代表日收益率的5%分位数（`r quantile(returns$ret, .05)`）[^risk]。
+绘制日收益率柱状图，更直观地展示数据。图中的红色竖线代表日收益率的5%分位数（`r quantile(returns$ret, .05)`）[^4]。
 
-[^risk]: 5%分位数与风险价值密切相关，也是监管机构通常监控的风险评估。
+[^4]: 5%分位数与风险价值密切相关，也是监管机构通常监控的风险评估。
 
 ```{r fig_ret}
 quantile_05 <- quantile(returns$ret, .05)
@@ -162,8 +165,226 @@ returns %>%
   print(n = Inf)
 ```
 
+## 多个股票分析
+
+基于整洁数据[@wickham2014]的特点，可以很方便地将单个股票的分析拓展到多个股票。接下来分析目前[道琼斯工业指数](https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average)中所有的成分股：
+
+```{r message=FALSE, warning=FALSE}
+ticker <- tq_index("DOW") # 获取成分股信息
+ticker
+```
+
+获取所有成分股在2000-01-01到2022-06-30的股票信息：
+
+```{r}
+index_prices <- tq_get(ticker,
+                       get = "stock.prices",
+                       from = "2000-01-01",
+                       to = "2022-06-30")
+index_prices
+```
+
+共获得了来自30家公司的`r nrow(index_prices)`行数据，对调整价格进行可视化，查看总体走势：
+
+```{r}
+index_prices %>% 
+  ggplot(aes(date, adjusted, color = symbol)) +
+  geom_line() +
+  labs(x = NULL, y = NULL, color = NULL,
+       title = "DOW index stock prices",
+       subtitle = "Prices in USD, adjusted for dividend payments and stock splits") +
+  theme(legend.position = "none")
+```
+
+对30家公司的日收益率进行汇总统计：
+
+```{r}
+all_returns <- index_prices %>% 
+  group_by(symbol) %>% 
+  mutate(ret = adjusted / lag(adjusted) - 1) %>% 
+  select(symbol, date, ret) %>% 
+  drop_na(ret) %>% 
+  ungroup()  # 解除分组
+
+all_returns %>% 
+  mutate(ret = ret * 100) %>% 
+  group_by(symbol) %>% 
+  summarise(across(
+    ret,
+    list(
+      daily_mean = mean,
+      daily_sd = sd,
+      daily_min = min,
+      daily_max = max
+    ),
+    .names = "{.fn}"
+  ))
+```
+
+到此为止，就可以下载和处理任意股票组合的价格数据了。比如用`ticker <- tq_index("SP500")`修改`ticker`为标普500的成分股信息，就可以分析标普500中股票价格数据。因为有很多数据需要下载，这个操作比较耗时，这里不演示。
+
+## 其他数据汇总形式
+
+道琼斯总交易量：
+
+```{r}
+volume <- index_prices %>% 
+  mutate(volume_usd = volume * close / 1e9) %>% 
+  group_by(date) %>% 
+  summarise(volume = sum(volume_usd))
+
+volume %>% 
+  ggplot(aes(date, volume)) +
+  geom_line() +
+  labs(x = NULL, y = NULL,
+       title = "Aggregate daily trading volume in billion USD")
+```
+
+可利用45°线比较第$t$天与第$t-1$天的交易量：
+
+```{r warning=FALSE}
+volume %>% 
+  ggplot(aes(lag(volume), volume)) +
+  geom_point() +
+  geom_abline(aes(intercept = 0, slope = 1),
+              linetype = "dotted", color = "red",
+              size = .8) +
+  labs(x = "Previous day aggregate trading volume (billion USD)",
+       y = "Aggregate trading volume (billion USD)",
+       title = "Trading volume on DOW Index versus previous day volume")
+```
+
+纯纯目测可以发现：交易量大的日子后面往往也是交易量大的日子。
+
+::: {.bd-callout .bd-callout-info}
+<h4>我看45°线</h4>
+将股票价格记作$p$，这里的$x$轴为$p_{t-1}$，$y$轴为$p_t$，在一阶自回归模型中，$\beta_1$（线性回归系数）相比45°线可以显示更多信息。后面作者讲深入应该会涉及。
+:::
+
+## 投资组合问题
+
+最佳投资组合追求高回报、低风险：
+
+> The standard framework for optimal portfolio selection considers investors that prefer higher future returns but dislike future return volatility (defined as the square root of the return variance): the *mean-variance investor*.
+
+```{r}
+# 清洗掉行数较少的企业的所有股票
+index_prices <- index_prices %>% 
+  group_by(symbol) %>% 
+  mutate(n = n()) %>% 
+  ungroup() %>% 
+  filter(n == max(n)) %>% 
+  select(-n)
+
+# 计算每个企业每月的回报率
+returns <- index_prices %>% 
+  mutate(month = floor_date(date, "month")) %>% 
+  group_by(symbol, month) %>% 
+  summarise(price = last(adjusted), .groups = "drop_last") %>% 
+  mutate(ret = price / lag(price) - 1) %>% 
+  drop_na(ret) %>% 
+  select(-price)
+```
+
+将收益率转为$(T \times N)$的矩阵，计算样本回报率均值矩阵$\hat{\mu}$和样本协方差矩阵$\hat{\Sigma}$:
+$$\hat\mu = \frac{1}{T}\sum\limits_{t=1}^T r_t$$
+$$\hat\Sigma = \frac{1}{T-1}\sum\limits_{t=1}^T (r_t - \hat\mu)(r_t - \hat\mu)'$$
+
+```{r}
+return_matrix <- returns %>% 
+  pivot_wider(names_from = symbol,
+              values_from = ret) %>% 
+  select(-month)
+
+mu <- colMeans(return_matrix)
+Sigma <- cov(return_matrix)
+```
+
+::: {.bd-callout .bd-callout-warning}
+<h4>难点警告</h4>
+下面的内容理解还不透彻，先记录。
+:::
+
+接下来计算最小方差的投资组合权重$\omega_\text{mvp}$和它的预期收益$\omega_\text{mvp}'\mu$和波动率$\sqrt{\omega_\text{mvp}'\Sigma\omega_\text{mvp}}$。$\omega_\text{mvp}$是以下问题的解：
+$$\omega_\text{mvp} = \arg\min w'\Sigma w \\
+\text{ s.t. } \sum\limits_{i=1}^Nw_i = 1$$
+
+```{r}
+N <- ncol(return_matrix)
+iota <- rep(1, N)
+mvp_weights <- solve(Sigma) %*% iota  # solve用于求逆
+mvp_weights <- mvp_weights / sum(mvp_weights)
+
+tibble(
+  expected_ret = t(mvp_weights) %*% mu,
+  volatility = sqrt(t(mvp_weights) %*% Sigma %*% mvp_weights)
+)
+```
+
+尝试寻找一个可以获得三倍于最小方差组合的预期收益的投资组合权重：
+
+```{r}
+mu_bar <- 3 * t(mvp_weights) %*% mu
+
+C <- as.numeric(t(iota) %*% solve(Sigma) %*% iota)
+D <- as.numeric(t(iota) %*% solve(Sigma) %*% mu)
+E <- as.numeric(t(mu) %*% solve(Sigma) %*% mu)
+
+lambda_tilde <- as.numeric(2 * (mu_bar - D / C) / (E - D^2 / C))
+efp_weights <- mvp_weights +
+  lambda_tilde / 2 * (solve(Sigma) %*% mu - D * mvp_weights)
+```
+
+## 有效边界
+
+只要有两个有效的投资组合，就可以通过它们权重的线性组合得到有效边界。有效边界描述了在每个风险水平下可以实现的最高预期收益。
+
+```{r}
+c <- seq(from = -.4, to = 1.9, by = .01)
+res <- tibble(
+  c = c,
+  mu = NA,
+  sd = NA
+)
+
+for (i in seq_along(c)) {
+  w <- (1 - c[i]) * mvp_weights + (c[i]) * efp_weights
+  res$mu[i] <- 12 * 100 * t(w) %*% mu
+  res$sd[i] <- 12 * sqrt(100) * sqrt(t(w) %*% Sigma %*% w)
+}
+```
+
+```{r}
+res %>% 
+  ggplot(aes(sd, mu)) +
+  geom_point() +
+  geom_point(
+    data = res %>% filter(c %in% c(0, 1)),
+    size = 4
+  ) +
+  geom_point(
+    data = tibble(
+      mu = 12 * 100 * mu,
+      sd = 12 * 10 * sqrt(diag(Sigma))
+    ),
+    aes(sd, mu), size = 1, color = "blue"
+  ) +
+  labs(
+    x = "Annualized standard deviation (in percent)",
+    y = "Annualized expected return (in percent)",
+    title = "Efficient frontier for Dow Jones constituents",
+    subtitle = "Thick dots indicate the location of the minimum variance and efficient tangency portfolio"
+    )
+```
 
 
+# References
+
+```{r data-save, eval=FALSE, include=FALSE}
+# 为不能连接外网的小伙伴保存数据库中下载的数据
+save(price, ticker, index_prices,
+     file = "datas.rds")
+```
 
 
 
