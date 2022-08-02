@@ -14,3 +14,7 @@ PerformanceAnalytics
 TTR
 quantmod
 tidyquant
+scales
+frenchdata
+readxl
+googledrive
